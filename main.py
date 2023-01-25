@@ -2,6 +2,9 @@ import control_line
 import electric_line
 import computer_line
 import qiaojia
+import fangbao_dengju
+import sanfang_dengju
+
 
 def menu():
     print('***************************************************')
@@ -10,6 +13,8 @@ def menu():
     print('2.计算机电缆')
     print('3.控制电缆')
     print('4.铝合金桥架')
+    print('5.防爆灯具')
+    print('6.三防灯具')
     print('***************************************************')
     chose = input()
     if chose == '1':
@@ -20,9 +25,14 @@ def menu():
         control_line.control()
     elif chose == '4':
         qiaojia.qiaojia()
+    elif chose == '5':
+        fangbao_dengju.fangbao()
+    elif chose == '6':
+        sanfang_dengju.sanfang()
     else:
         print('输入错误，请重新输入')
         menu()
+
 
 
 a = '0'
