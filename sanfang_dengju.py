@@ -19,7 +19,7 @@ def is_chinese(string):
     return 0
 
 def getdata(file):
-    number = input('输入你要提取的格子数量和第一个格子的编号，格式为:1,C4 \n记得要大写,并在英文模式输入\n')
+    number = input('输入你要提取的格子数量和第一个格子的编号，格式为:1,C3 \n记得要大写,并在英文模式输入\n')
     sheet = file.active
     num = number.split(',')[0]
     location = number.split(',')[1]
@@ -41,11 +41,12 @@ def getdata(file):
         name = ''
         W = ''
         fangshi = ''
+        fangshi1 = ''
         flag = 0
         # ，，，，，，，米数（路灯），[壁式、中光强，壁式、低光强（航空障碍灯），座式、中光强，座式、低光强]x.find('支架') != -1 or
         # 灯，投光灯，泛光灯，标志灯，航空障碍灯，荧光灯，防腐荧光灯，路灯，应急灯
+        ff = 0
         for x in val:
-            ff = 0
             if x.find('LED') != -1 and ff == 0:
                 if x.find('投光灯') != -1:
                     name = '投光灯'
@@ -89,6 +90,7 @@ def getdata(file):
                                     x = x[2:]
                                 if x != '':
                                     W = x + 'W'
+                                    W = "".join(filter(lambda s: s in '0123456789×W', W))
                                     break
                 else:
                     x = re.sub(r"x", '×', x)
@@ -105,59 +107,60 @@ def getdata(file):
                                 x = re.sub(r"[A-Za-z]", "", v)
                                 if x != '':
                                     W = x + 'W' + '×' + mult
+                                    W = "".join(filter(lambda s: s in '0123456789×W', W))
                                     break
 
             if flag != 1 and [x.find('支架') != -1 or x.find('护栏') != -1 or x.find('吸顶') != -1 or x.find('壁') != -1 or x.find('法兰') != -1 or x.find('吊杆') != -1 or x.find('弯杆') != -1 or [[x.find('米') != -1 or x.find('m') != -1 or x.find('M') != -1] and name == '路灯']]:
                 fangshi = x
                 if name.find("航空") != -1:
                     if fangshi.find('壁') != -1:
-                        fangshi = '壁式'
+                        fangshi1 = '壁式'
                         flag = 1
                     elif fangshi.find('座') != -1:
-                        fangshi = '座式'
+                        fangshi1 = '座式'
                         flag = 1
                     else:
                         final.append(['none','none','none'])
                         continue
                     if x.find('中光强'):
-                        fangshi = fangshi + '中光强'
+                        fangshi1 = fangshi + '中光强'
                     if x.find('低光强'):
-                        fangshi = fangshi + '低光强'
+                        fangshi1 = fangshi + '低光强'
                 if fangshi.find('支架') != -1:
-                    fangshi = '支架式'
+                    fangshi1 = '支架式'
                     flag = 1
                 elif fangshi.find('护栏') != -1:
-                    fangshi = '护栏式'
+                    fangshi1 = '护栏式'
                     flag = 1
                 elif fangshi.find('吸顶') != -1:
-                    fangshi = '吸顶式'
+                    fangshi1 = '吸顶式'
                     flag = 1
                 elif fangshi.find('壁') != -1:
-                    fangshi = '壁式'
+                    fangshi1 = '壁式'
                     flag = 1
                 elif fangshi.find('法兰') != -1:
-                    fangshi = '法兰式'
+                    fangshi1 = '法兰式'
                     flag = 1
                 elif fangshi.find('吊杆') != -1:
-                    fangshi = '吊杆式'
+                    fangshi1 = '吊杆式'
                     flag = 1
                 elif fangshi.find('弯杆') != -1:
-                    fangshi = '吊杆式'
+                    fangshi1 = '吊杆式'
                     flag = 1
-                elif [x.find('米') != -1 or x.find('m') != -1 or x.find('M') != -1] and name == '路灯':
+                elif x.find('米') != -1 or x.find('m') != -1 or x.find('M') != -1 and name == '路灯':
                     loc = x.find('米') + x.find('m') + x.find('M') + 2
                     flag = 1
                     if loc >= 1:
                         m = x[loc-1]
                         if m == '0':
                             m = '10'
-                        fangshi = '灯杆' + m + '米'
-        this_one = [name,W,fangshi]
+                        fangshi1 = '灯杆' + m + '米'
+        this_one = [name,W,fangshi1]
         final.append(this_one)
     return final
 
 def deal_cell(cell):
-    cell = re.sub(r'（|）|/(|/)|LED|防水防尘防腐|高效|≥|≤| |', '', cell)
+    cell = re.sub(r'（|）|/(|/)|LED|防水防尘防腐|高效|节能|三防|≥|≤| |', '', cell)
     return cell
 
 def getprice(base,data,file,_):
