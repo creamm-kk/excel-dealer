@@ -106,7 +106,7 @@ def guanjietou(val, sheet):
 def zadai(val, sheet):
     h = 0
     price = 0
-    name = '不锈钢桥架盖板扎带'
+    name = '扎带'
     for m in range(sheet.min_row, sheet.max_row + 1):
         h += 1
         cell1 = sheet.cell(m, 3).value
@@ -239,7 +239,7 @@ def xiangjiaodian(val, sheet):
     h = 0
     price = 0
     price_list = ''
-    name = '铝合金调角片'
+    name = '桥架用防电化学橡胶垫'
     for m in range(sheet.min_row, sheet.max_row + 1):
         h += 1
         cell1 = sheet.cell(m, 2).value
@@ -247,4 +247,4 @@ def xiangjiaodian(val, sheet):
         if cell1 == name:
             price += sheet.cell(m, 4).value
             break
-    return price_list, h
+    return price, h

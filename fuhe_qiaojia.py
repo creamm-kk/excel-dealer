@@ -138,7 +138,7 @@ def itself(val,wh):
             mode = 'caoshi'
         if data.find('直通') != -1:
             classes = '直通桥架'
-        elif data.find('垂直') != -1 or data.find('凹') != -1 or data.find('凸') != -1 or data.find('异径接头'):
+        elif data.find('垂直') != -1 or data.find('凹') != -1 or data.find('凸') != -1 or data.find('异径接头') != -1:
             classes = '垂直弯通'
         elif data.find('三通') != -1:
             classes = '水平三通'

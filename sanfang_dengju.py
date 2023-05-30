@@ -77,6 +77,7 @@ def getdata(file):
                     ff = 1
 
             if x.find('W') != -1 or x.find('w') != -1 or x.find('瓦') != -1:
+                x = re.sub('220V','',x)
                 if name != '荧光灯':
                     loc = x.find('W') + x.find('w') + x.find('瓦') + 2
                     if loc >= 2:
@@ -99,14 +100,18 @@ def getdata(file):
                     if loc >= 2:
                         if x[loc-1] >= '0' and x[loc-1] <= '9' and x[loc-2] >= '0' and x[loc-2] <= '9':
                             loc2 = x.find('×')
-                            mult = x[loc2+1]
-                            val = re.split('220V', x)
+                            mult = x[loc2-1]
+                            val = re.split('220V|×', x)
                             val = filter(not_empty, val)
                             val = list(val)
+                            L = 0
                             for v in val:
+                                if L == 0:
+                                    L += 1
+                                    continue
                                 x = re.sub(r"[A-Za-z]", "", v)
                                 if x != '':
-                                    W = x + 'W' + '×' + mult
+                                    W = mult + '×' + x + 'W'
                                     W = "".join(filter(lambda s: s in '0123456789×W', W))
                                     break
 
@@ -147,20 +152,20 @@ def getdata(file):
                 elif fangshi.find('弯杆') != -1:
                     fangshi1 = '吊杆式'
                     flag = 1
-                elif x.find('米') != -1 or x.find('m') != -1 or x.find('M') != -1 and name == '路灯':
+                elif [[fangshi.find('米') != -1] or [fangshi.find('m') != -1] or [fangshi.find('M') != -1]] and name == '路灯':
                     loc = x.find('米') + x.find('m') + x.find('M') + 2
-                    flag = 1
                     if loc >= 1:
                         m = x[loc-1]
                         if m == '0':
                             m = '10'
+                        flag = 1
                         fangshi1 = '灯杆' + m + '米'
         this_one = [name,W,fangshi1]
         final.append(this_one)
     return final
 
 def deal_cell(cell):
-    cell = re.sub(r'（|）|/(|/)|LED|防水防尘防腐|高效|节能|三防|≥|≤| |', '', cell)
+    cell = re.sub(r'（|）|/(|/)|LED|防水防尘防腐|高效|节能|全塑|双管|单管|三防|高度|≥|≤| |', '', cell)
     return cell
 
 def getprice(base,data,file,_):

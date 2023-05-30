@@ -46,7 +46,7 @@ def zadai(vals):
     number = []
     for data in vals:
         n = "".join(filter(lambda s: s in '0123456789', data))
-        if n != '':
+        if n != '' and n != '304' and n != '316':
             number.append(n)
     wh = number[0]+'×'+number[1]
     zhonglei = 'zadai'

@@ -33,6 +33,7 @@ def menu():
         print('输入错误，请重新输入')
         menu()
 
+# menu()
 
 
 a = '0'

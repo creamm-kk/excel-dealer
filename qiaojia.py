@@ -56,7 +56,11 @@ def data_dealer(datas):
     features_list = []
     for val in datas:
         #先处理桥架本体
-        if val.find('直通') != -1 or val.find('弯通') != -1 or val.find('三通') != -1 or val.find('四通') != -1 or val.find('凹') != -1 or val.find('异径接头') != -1 or val.find('凸') != -1 and val.find('抱箍') == -1 and val.find('封头') == -1 and val.find('管接头') == -1 and val.find('扎带') == -1 and val.find('隔板') == -1 and val.find('直接片') == -1 and val.find('连接板') == -1 and val.find('弯接片') == -1 and val.find('调角片') == -1 and val.find('调宽片') == -1 and val.find('调高片') == -1 and val.find('连接线') == -1 and val.find('接地线') == -1 and val.find('跨接线') == -1 and val.find('接连线') == -1 and val.find('固定压板') == -1 and val.find('胶垫') == -1:
+        if val.find('异径') != -1:
+            classes = 'error'
+            features = ['', '', '', '', '', 'error', '']
+            features_list.append(features)
+        elif val.find('直通') != -1 or val.find('弯通') != -1 or val.find('三通') != -1 or val.find('四通') != -1 or val.find('凹') != -1 or val.find('异径接头') != -1 or val.find('凸') != -1 and val.find('抱箍') == -1 and val.find('封头') == -1 and val.find('管接头') == -1 and val.find('扎带') == -1 and val.find('隔板') == -1 and val.find('直接片') == -1 and val.find('连接板') == -1 and val.find('弯接片') == -1 and val.find('调角片') == -1 and val.find('调宽片') == -1 and val.find('调高片') == -1 and val.find('连接线') == -1 and val.find('接地线') == -1 and val.find('跨接线') == -1 and val.find('接连线') == -1 and val.find('固定压板') == -1 and val.find('胶垫') == -1:
             val = re.sub(r'X', '×', val)
             val = re.sub(r'x', '×', val)
             val = re.sub(r'\*', '×', val)
@@ -79,7 +83,10 @@ def data_dealer(datas):
             vals = filter(not_empty, vals)
             vals = list(vals)
             classes = ''
-            if val.find('抱箍') != -1:
+            if val.find('异径') != -1:
+                classes = 'error'
+                features = ['', '', '', '', '', 'error','']
+            elif val.find('抱箍') != -1:
                 classes = 'baoku'
                 features = fujian.baoku(vals)
             elif val.find('封头') != -1:
@@ -128,21 +135,21 @@ def itself(val,wh):
     tibian = ''
     bihou = 0
     zhonglei = 'qiaojia'
-    for data in val:
+    for data in val[:-2]:
         if data.find('梯') != -1:
             mode = 'tishi'
         if data.find('托盘') != -1 or data.find('槽') != -1:
             mode = 'caoshi'
         if data.find('直通') != -1:
             classes = '直通桥架'
-        elif data.find('垂直') != -1 or data.find('凹') != -1 or data.find('凸') != -1 or data.find('异径接头'):
-            classes = '垂直弯通'
         elif data.find('三通') != -1:
             classes = '水平三通'
         elif data.find('四通') != -1:
             classes = '水平四通'
         elif data.find('水平') != -1:
             classes = '水平弯通'
+        elif data.find('垂直') != -1 or data.find('凹') != -1 or data.find('凸') != -1 or data.find('异径接头') != -1:
+            classes = '垂直弯通'
         if data.find('盖板') != -1 or data.find('护罩') != -1:
             if data.find('配') != -1 or data.find('有') != -1 or data.find('带') != -1:
                 have_gaiban = 'yes'
@@ -156,6 +163,8 @@ def itself(val,wh):
         tibian = '2tibian'
     else:
         tibian = '1tibian'
+    if mode == '':
+        mode = 'caoshi'
     bihou = float(val[-1])
     final = [wh,bihou,mode,have_gaiban,tibian,zhonglei,classes]
     return final
