@@ -3,7 +3,7 @@ import xlrd
 import re
 from xlutils.copy import copy
 import fujian
-import get_p
+import get_p_fuhe
 
 
 def get_path():
@@ -89,8 +89,9 @@ def data_dealer(datas):
             elif val.find('抱箍') != -1:
                 classes = 'baoku'
                 features = fujian.baoku(vals)
-            elif val.find('封头') != -1:
+            elif val.find('封头') != -1 or val.find('终端头') != -1:
                 classes = 'fengtou'
+                # print(classes)
                 features = fujian.fengtou(vals)
             elif val.find('管接头') != -1:
                 classes = 'guanjietou'
@@ -146,7 +147,7 @@ def itself(val,wh):
             classes = '水平三通'
         elif data.find('四通') != -1:
             classes = '水平四通'
-        elif data.find('水平') != -1:
+        elif data.find('水平') != -1 or data.find('上弯通') != -1 or data.find('下弯通') != -1 :
             classes = '水平弯通'
         elif data.find('垂直') != -1 or data.find('凹') != -1 or data.find('凸') != -1 or data.find('异径接头') != -1:
             classes = '垂直弯通'
@@ -165,8 +166,8 @@ def itself(val,wh):
         tibian = '1tibian'
     if mode == '':
         mode = 'caoshi'
-    bihou = float(val[-1])
-    final = [wh,bihou,mode,have_gaiban,tibian,zhonglei,classes]
+    # bihou = float(val[-1])
+    final = [wh,0,mode,have_gaiban,tibian,zhonglei,classes]
     return final
 
 
@@ -189,92 +190,93 @@ def getprice(base, data, file, _):
     sheet = base.active
     price_list = []
     for val in data:
+        print(val)
         if val[-2] == 'qiaojia':
-            price,h = get_p.qiaojia(val,sheet)
+            price,h = get_p_fuhe.qiaojia(val,sheet)
             if price == 0:
                 prices = ['错误','错误']
             else:
                 prices = [price,h]
             price_list.append(prices)
         elif val[-2] == 'baoku':
-            price,h = get_p.baoku(val,sheet)
+            price,h = get_p_fuhe.baoku(val,sheet)
             if price == 0:
                 prices = ['错误', '错误']
             else:
                 prices = [price, h]
             price_list.append(prices)
         elif val[-2] == 'fengtou':
-            price, h = get_p.fengtou(val, sheet)
+            price, h = get_p_fuhe.fengtou(val, sheet)
             if price == 0:
                 prices = ['错误', '错误']
             else:
                 prices = [price, h]
             price_list.append(prices)
         elif val[-2] == 'gaiban':
-            price, h = get_p.gaiban(val, sheet)
+            price, h = get_p_fuhe.gaiban(val, sheet)
             if price == 0:
                 prices = ['错误', '错误']
             else:
                 prices = [price, h]
             price_list.append(prices)
         elif val[-2] == 'guanjietou':
-            price, h = get_p.guanjietou(val, sheet)
+            price, h = get_p_fuhe.guanjietou(val, sheet)
             if price == 0:
                 prices = ['错误', '错误']
             else:
                 prices = [price, h]
             price_list.append(prices)
         elif val[-2] == 'zadai':
-            price, h = get_p.zadai(val, sheet)
+            price, h = get_p_fuhe.zadai(val, sheet)
             if price == 0:
                 prices = ['错误', '错误']
             else:
                 prices = [price, h]
             price_list.append(prices)
         elif val[-2] == 'geban':
-            price, h = get_p.geban(val, sheet)
+            price, h = get_p_fuhe.geban(val, sheet)
             if price == 0:
                 prices = ['错误', '错误']
             else:
                 prices = [price, h]
             price_list.append(prices)
         elif val[-2] == 'zhijiepian':
-            price, h = get_p.zhijiepian(val, sheet)
+            price, h = get_p_fuhe.zhijiepian(val, sheet)
             if price == 0:
                 prices = ['错误', '错误']
             else:
                 prices = [price, h]
             price_list.append(prices)
         elif val[-2] == 'wanjiepian':
-            price, h = get_p.wanjiepian(val, sheet)
+            price, h = get_p_fuhe.wanjiepian(val, sheet)
             if price == 0:
                 prices = ['错误', '错误']
             else:
                 prices = [price, h]
             price_list.append(prices)
         elif val[-2] == 'tiaojiaopian':
-            price, h = get_p.tiaojiaopian(val, sheet)
+            price, h = get_p_fuhe.tiaojiaopian(val, sheet)
             if price == 0:
                 prices = ['错误', '错误']
             else:
                 prices = [price, h]
             price_list.append(prices)
         elif val[-2] == 'lianjiexian':
-            price, h = get_p.lianjiexian(val, sheet)
+            price, h = get_p_fuhe.lianjiexian(val, sheet)
             if price == 0:
                 prices = ['错误', '错误']
             else:
                 prices = [price, h]
             price_list.append(prices)
         elif val[-2] == 'gudingyaban':
-            price, h = get_p.gudingyaban(val, sheet)
+            price, h = get_p_fuhe.gudingyaban(val, sheet)
             if price == 0:
                 prices = ['错误', '错误']
             else:
                 prices = [price, h]
             price_list.append(prices)
         elif val[-2] == 'xiangjiaodian':
-            price, h = get_p.xiangjiaodian(val, sheet)
+            price, h = get_p_fuhe.xiangjiaodian(val, sheet)
             if price == 0:
                 prices = ['错误', '错误']
             else:

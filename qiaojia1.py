@@ -3,7 +3,7 @@ import xlrd
 import re
 from xlutils.copy import copy
 import fujian
-import get_p
+import get_p1
 
 
 def get_path():
@@ -28,8 +28,10 @@ def is_chinese(string):
     return 0
 
 def getdata(file):
-    number = input('输入你要提取的格子数量和第一个格子的编号，格式为:1,C3 \n记得要大写,并在英文模式输入\n')
+    number = input('输入你要提取的格子数量和第一个格子的编号，格式为:1,C4 \n记得要大写,并在英文模式输入\n')
     sheet = file.active
+    cu = sheet.cell(2, 1).value[-5:]
+    cu = int(cu)
     num = number.split(',')[0]
     location = number.split(',')[1]
     datas = []
@@ -49,7 +51,7 @@ def getdata(file):
         datas.append(data)
         raw += 1
 
-    return datas
+    return datas,cu
 
 def data_dealer(datas):
     features = ''
@@ -89,36 +91,94 @@ def data_dealer(datas):
             elif val.find('抱箍') != -1:
                 classes = 'baoku'
                 features = fujian.baoku(vals)
-            elif val.find('封头') != -1:
+                if val.find('喷') != -1 or val.find('环氧树脂') != -1:
+                    pen = '喷'
+                else:
+                    pen = ''
+                features.insert(-2, pen)
+            elif val.find('封头') != -1 or val.find('终端头') != -1:
                 classes = 'fengtou'
                 features = fujian.fengtou(vals)
+                # print('aaaa',features)
+                if val.find('喷') != -1 or val.find('环氧树脂') != -1:
+                    pen = '喷'
+                else:
+                    pen = ''
+                # print('aaaa',features)
+                features.insert(-2, pen)
+                # print(features)
             elif val.find('管接头') != -1:
                 classes = 'guanjietou'
                 features = fujian.guanjietou(vals)
+                if val.find('喷') != -1 or val.find('环氧树脂') != -1:
+                    pen = '喷'
+                else:
+                    pen = ''
+                features.insert(-2, pen)
             elif val.find('扎带') != -1:
                 classes = 'zadai'
                 features = fujian.zadai(vals)
+                if val.find('喷') != -1 or val.find('环氧树脂') != -1:
+                    pen = '喷'
+                else:
+                    pen = ''
+                features.insert(-2, pen)
             elif val.find('隔板') != -1:
                 classes = 'geban'
                 features = fujian.geban(vals)
+                if val.find('喷') != -1 or val.find('环氧树脂') != -1:
+                    pen = '喷'
+                else:
+                    pen = ''
+                features.insert(-2, pen)
             elif val.find('直接片') != -1 or val.find('伸缩片') != -1 or val.find('连接片') != -1 or val.find('连接板') != -1:
                 classes = 'zhijiepian'
                 features = fujian.zhijiepian(vals)
+                if val.find('喷') != -1 or val.find('环氧树脂') != -1:
+                    pen = '喷'
+                else:
+                    pen = ''
+                features.insert(-2, pen)
             elif val.find('弯接片') != -1:
                 classes = 'wanjiepian'
                 features = fujian.wanjiepian(vals)
+                if val.find('喷') != -1 or val.find('环氧树脂') != -1:
+                    pen = '喷'
+                else:
+                    pen = ''
+                features.insert(-2, pen)
             elif val.find('调角片') != -1 or val.find('调高片') != -1 or val.find('调宽片') != -1:
                 classes = 'tiaojiaopian'
                 features = fujian.tiaojiaopian(vals)
+                if val.find('喷') != -1 or val.find('环氧树脂') != -1:
+                    pen = '喷'
+                else:
+                    pen = ''
+                features.insert(-2, pen)
             elif val.find('连接线') != -1 or val.find('接地线') != -1 or val.find('跨接线') != -1 or val.find('接连线') != -1:
                 classes = 'lianjiexian'
                 features = fujian.lianjiexian(vals)
+                if val.find('喷') != -1 or val.find('环氧树脂') != -1:
+                    pen = '喷'
+                else:
+                    pen = ''
+                features.insert(-2, pen)
             elif val.find('固定压板') != -1:
                 classes = 'gudingyaban'
                 features = fujian.gudingyaban(vals)
+                if val.find('喷') != -1 or val.find('环氧树脂') != -1:
+                    pen = '喷'
+                else:
+                    pen = ''
+                features.insert(-2, pen)
             elif val.find('胶垫') != -1:
                 classes = 'xiangjiaodian'
                 features = fujian.xiangjiaodian(vals)
+                if val.find('喷') != -1 or val.find('环氧树脂') != -1:
+                    pen = '喷'
+                else:
+                    pen = ''
+                features.insert(-2, pen)
             else:
                 classes = 'error'
                 features = ['', '', '', '', '', 'error','']
@@ -135,6 +195,7 @@ def itself(val,wh):
     tibian = ''
     bihou = 0
     zhonglei = 'qiaojia'
+    pen = ''
     for data in val[:-2]:
         if data.find('梯') != -1:
             mode = 'tishi'
@@ -157,6 +218,8 @@ def itself(val,wh):
                 have_gaiban = 'no'
             else:
                 zhonglei = 'gaiban'
+        if data.find('喷') != -1 or data.find('环氧树脂') != -1:
+            pen = '喷'
 
 
     if val[-2] =='双' or val[-2] =='双梯边':
@@ -166,7 +229,7 @@ def itself(val,wh):
     if mode == '':
         mode = 'caoshi'
     bihou = float(val[-1])
-    final = [wh,bihou,mode,have_gaiban,tibian,zhonglei,classes]
+    final = [wh,bihou,mode,have_gaiban,tibian,pen,zhonglei,classes]
     return final
 
 
@@ -185,96 +248,99 @@ def get_wh(val):#得到长宽
         wh = ['0','0']
     return wh
 
-def getprice(base, data, file, _):
+def getprice(base, data, file, cu, _):
     sheet = base.active
     price_list = []
+    i = 0
     for val in data:
+        i += 1
+        print(i)
         if val[-2] == 'qiaojia':
-            price,h = get_p.qiaojia(val,sheet)
+            price,h = get_p1.qiaojia(val,sheet,cu)
             if price == 0:
                 prices = ['错误','错误']
             else:
                 prices = [price,h]
             price_list.append(prices)
         elif val[-2] == 'baoku':
-            price,h = get_p.baoku(val,sheet)
+            price,h = get_p1.baoku(val,sheet,cu)
             if price == 0:
                 prices = ['错误', '错误']
             else:
                 prices = [price, h]
             price_list.append(prices)
         elif val[-2] == 'fengtou':
-            price, h = get_p.fengtou(val, sheet)
+            price, h = get_p1.fengtou(val, sheet,cu)
             if price == 0:
                 prices = ['错误', '错误']
             else:
                 prices = [price, h]
             price_list.append(prices)
         elif val[-2] == 'gaiban':
-            price, h = get_p.gaiban(val, sheet)
+            price, h = get_p1.gaiban(val, sheet,cu)
             if price == 0:
                 prices = ['错误', '错误']
             else:
                 prices = [price, h]
             price_list.append(prices)
         elif val[-2] == 'guanjietou':
-            price, h = get_p.guanjietou(val, sheet)
+            price, h = get_p1.guanjietou(val, sheet,cu)
             if price == 0:
                 prices = ['错误', '错误']
             else:
                 prices = [price, h]
             price_list.append(prices)
         elif val[-2] == 'zadai':
-            price, h = get_p.zadai(val, sheet)
+            price, h = get_p1.zadai(val, sheet,cu)
             if price == 0:
                 prices = ['错误', '错误']
             else:
                 prices = [price, h]
             price_list.append(prices)
         elif val[-2] == 'geban':
-            price, h = get_p.geban(val, sheet)
+            price, h = get_p1.geban(val, sheet,cu)
             if price == 0:
                 prices = ['错误', '错误']
             else:
                 prices = [price, h]
             price_list.append(prices)
         elif val[-2] == 'zhijiepian':
-            price, h = get_p.zhijiepian(val, sheet)
+            price, h = get_p1.zhijiepian(val, sheet,cu)
             if price == 0:
                 prices = ['错误', '错误']
             else:
                 prices = [price, h]
             price_list.append(prices)
         elif val[-2] == 'wanjiepian':
-            price, h = get_p.wanjiepian(val, sheet)
+            price, h = get_p1.wanjiepian(val, sheet,cu)
             if price == 0:
                 prices = ['错误', '错误']
             else:
                 prices = [price, h]
             price_list.append(prices)
         elif val[-2] == 'tiaojiaopian':
-            price, h = get_p.tiaojiaopian(val, sheet)
+            price, h = get_p1.tiaojiaopian(val, sheet,cu)
             if price == 0:
                 prices = ['错误', '错误']
             else:
                 prices = [price, h]
             price_list.append(prices)
         elif val[-2] == 'lianjiexian':
-            price, h = get_p.lianjiexian(val, sheet)
+            price, h = get_p1.lianjiexian(val, sheet,cu)
             if price == 0:
                 prices = ['错误', '错误']
             else:
                 prices = [price, h]
             price_list.append(prices)
         elif val[-2] == 'gudingyaban':
-            price, h = get_p.gudingyaban(val, sheet)
+            price, h = get_p1.gudingyaban(val, sheet,cu)
             if price == 0:
                 prices = ['错误', '错误']
             else:
                 prices = [price, h]
             price_list.append(prices)
         elif val[-2] == 'xiangjiaodian':
-            price, h = get_p.xiangjiaodian(val, sheet)
+            price, h = get_p1.xiangjiaodian(val, sheet,cu)
             if price == 0:
                 prices = ['错误', '错误']
             else:
@@ -290,22 +356,23 @@ def toexcel(pricelist,file,_,path):
     for i in range(len(pricelist)):
         # print(pricelist[i])
         if pricelist[i] != 'error':
-            sheet.cell(i+3, n + 1, pricelist[i][0])
-            sheet.cell(i+3, n + 2, pricelist[i][1])
+            sheet.cell(i+4, n + 1, pricelist[i][0])
+            sheet.cell(i+4, n + 2, pricelist[i][1])
         else:
-            sheet.cell(i + 3, n + 1, '出错')
-            sheet.cell(i + 3, n + 2, '出错')
+            sheet.cell(i + 4, n + 1, '出错')
+            sheet.cell(i + 4, n + 2, '出错')
         file.save(filename=path)
 
 def qiaojia():
     file, _, path = get_path()
-    data = getdata(file)
+    data,cu = getdata(file)
+    cu = 1 + (cu-17000)//500
     print(data)
     data = data_dealer(data)
     print(data)
     print('输入基础表地址')
     base, a, path1 = get_path()
-    x = getprice(base, data, file, _)
+    x = getprice(base, data, file, cu, _)
     print(x)
     toexcel(x, file, _, path)
     print('写入完成')
